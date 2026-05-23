@@ -46,7 +46,14 @@ impl Crorecut {
             show_settings_modal: false,
         };
 
-        let initial_task = Task::done(Message::Grid(grid::Message::ScanVideosDirectory));
+        let initial_task = Task::batch([
+            Task::perform(
+                async { Message::Grid(grid::Message::ScanVideosDirectory) },
+                |msg| msg,
+            ),
+            iced::font::load(crate::JOST_FONT).discard(),
+            iced::font::load(crate::JOST_FONT_LIGHT).discard(),
+        ]);
         (app, initial_task)
     }
 

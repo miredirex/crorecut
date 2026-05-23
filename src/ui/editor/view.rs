@@ -10,7 +10,7 @@ use super::{
 };
 use crate::ui::color as app_colors;
 use crate::ui::{corner_dots, crorecut_button, crorecut_checkbox, positioned_mouse_area, styles};
-use crate::utils::{CropSelection, format_duration_mmss, format_duration_human_readable};
+use crate::utils::{CropSelection, format_duration_human_readable, format_duration_mmss};
 
 const COMMAND_PREVIEW_FONT_SIZE: f32 = 12.0;
 
@@ -95,7 +95,7 @@ impl Editor {
 }
 
 fn link_button(label: &str, message: Message) -> iced::widget::Button<'_, Message> {
-    button(text(label).size(12))
+    button(text(label).size(13))
         .on_press(message)
         .style(styles::text_link_button)
         .padding(0)
@@ -246,18 +246,18 @@ fn render_status_row<'a>(status: &'a RenderStatus) -> Element<'a, Message> {
     match status {
         RenderStatus::Idle | RenderStatus::Rendering => row![].into(),
         RenderStatus::Completed(output_path) => row![
-            text("Done! (").size(12).color(app_colors::FIR_GREEN),
+            text("Done! (").size(13).color(app_colors::FIR_GREEN),
             link_button("Open", Message::OpenFile(output_path.clone())),
-            text(", ").size(12).color(app_colors::FIR_GREEN),
+            text(", ").size(13).color(app_colors::FIR_GREEN),
             link_button("Open Folder", Message::OpenParentDir(output_path.clone())),
-            text(" or ").size(12).color(app_colors::FIR_GREEN),
+            text(" or ").size(13).color(app_colors::FIR_GREEN),
             link_button("Delete", Message::DeleteFile(output_path.clone())),
-            text(")").size(12).color(app_colors::FIR_GREEN),
+            text(")").size(13).color(app_colors::FIR_GREEN),
         ]
         .into(),
         RenderStatus::Failed(err) => row![
             text(format!("Failed: {}", err))
-                .size(12)
+                .size(13)
                 .color(iced::Color::from_rgb(1.0, 0.4, 0.4))
         ]
         .into(),
@@ -393,8 +393,8 @@ fn command_header(state: &Editor) -> iced::widget::Row<'_, Message> {
             "Mute",
             Message::MuteAudioToggled(!state.mute_audio)
         ),
-        space::horizontal().width(12),
-        text("Resolution:").size(12).color(app_colors::TEXT),
+        space::horizontal().width(20),
+        text("Resolution:").color(app_colors::TEXT),
         space::horizontal().width(4),
         pick_list(
             Some(selected),
@@ -404,21 +404,20 @@ fn command_header(state: &Editor) -> iced::widget::Row<'_, Message> {
         .on_select(|opt| Message::ResolutionChanged(opt.to_resolution()))
         .style(styles::pick_list)
         .menu_style(styles::pick_list_menu)
-        .text_size(12)
+        .text_size(13)
         .line_height(LineHeight::Absolute(20.0.into()))
         .padding([6, 8]),
         space::horizontal().width(8),
-        text("Compress to:").size(12).color(app_colors::TEXT),
+        text("Compress to:").color(app_colors::TEXT),
         space::horizontal().width(4),
         text_input("", &state.target_size_mb)
             .on_input(Message::TargetSizeChanged)
             .style(styles::text_input)
             .width(Length::Fixed(56.0))
             .padding([6, 4])
-            .size(12)
             .line_height(LineHeight::Absolute(20.0.into())),
         space::horizontal().width(4),
-        text("MB").size(12).color(app_colors::TEXT),
+        text("MB").color(app_colors::TEXT),
     ]
     .align_y(Alignment::Center)
     .spacing(0)

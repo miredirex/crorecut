@@ -62,14 +62,11 @@ where
     fn from(button_config: CrorecutButton<Message>) -> Self {
         let label_content: Element<'_, Message> = match button_config.sublabel {
             Some(sub) => column![
-                text(button_config.label).color(app_colors::TEXT).size(14),
-                text(sub).color(app_colors::TEXT_SECONDARY).size(12)
+                text(button_config.label).color(app_colors::TEXT),
+                text(sub).size(13).color(app_colors::TEXT_SECONDARY)
             ]
             .into(),
-            None => text(button_config.label)
-                .color(app_colors::TEXT)
-                .size(14)
-                .into(),
+            None => text(button_config.label).color(app_colors::TEXT).into(),
         };
 
         let content: Element<'_, Message> = match button_config.icon {

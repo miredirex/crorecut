@@ -110,7 +110,7 @@ impl Settings {
             .align_y(Alignment::Center),
             space().height(Length::Fill),
             row![
-                text("Made with").size(12).color(app_colors::TEXT_SECONDARY),
+                text("Made with").size(13).color(app_colors::TEXT_SECONDARY),
                 iced_logo(16),
             ]
             .spacing(6)
@@ -187,7 +187,7 @@ fn settings_input<'a>(
     on_input: impl Fn(String) -> Message + 'a,
 ) -> Element<'a, Message> {
     column![
-        text(label).size(12).color(app_colors::TEXT_SECONDARY),
+        text(label).size(13).color(app_colors::TEXT_SECONDARY),
         text_input(placeholder, value)
             .on_input(on_input)
             .padding(8)

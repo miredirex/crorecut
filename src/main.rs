@@ -4,6 +4,9 @@
 )]
 // ^ Hide console in release builds
 
+const JOST_FONT: &[u8] = include_bytes!("../assets/jost-regular.ttf");
+const JOST_FONT_LIGHT: &[u8] = include_bytes!("../assets/jost-light.ttf");
+
 mod app;
 mod audio;
 mod icons;
@@ -31,6 +34,7 @@ fn main() -> iced::Result {
         .style(Crorecut::style)
         .subscription(Crorecut::subscription)
         .settings(iced::Settings {
+            default_font: iced::Font::new("Jost"),
             vsync: false,
             ..Default::default()
         })

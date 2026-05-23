@@ -65,7 +65,7 @@ where
     mouse_area(
         row![
             checkbox_box(is_checked),
-            text(label.into()).size(12).color(app_colors::TEXT)
+            text(label.into()).color(app_colors::TEXT)
         ]
         .spacing(8)
         .align_y(Alignment::Center),

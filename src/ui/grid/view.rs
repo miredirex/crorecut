@@ -128,10 +128,10 @@ fn video_grid_item(video: &VideoItem) -> Element<'_, Message> {
     };
 
     let filename_label = text(&video.metadata.file_name)
-        .size(12)
+        .size(13)
         .color(iced::Color::WHITE);
     let dir_label = text(&video.metadata.parent_dir_name)
-        .size(12)
+        .size(13)
         .color(iced::Color::from_rgb(0.6, 0.6, 0.6));
 
     let content = column![thumbnail_content, filename_label, dir_label]
