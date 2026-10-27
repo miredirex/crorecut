@@ -37,6 +37,15 @@ A tiny, portable, FFmpeg-based video editing tool to cut, crop and export share-
 ## Contributing
 Found a bug or have a feature request? Open an issue or submit a pull request.
 
+### Development with Nix (Linux)
+
+```bash
+nix develop
+cargo run
+```
+
+The development shell includes Rust, FFmpeg, and the audio and graphics libraries.
+
 ## License
 
 [MIT licensed](LICENSE)
