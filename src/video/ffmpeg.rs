@@ -160,9 +160,12 @@ pub async fn get_video_stream_info(
 }
 
 /// Extract a single frame from a video at the specified timestamp. Returns RGBA frame bytes
+///
+/// Both dimensions are explicit because `scale=-1:h` can round differently and shear the image.
 pub async fn extract_frame(
     video_path: PathBuf,
     timestamp_seconds: f64,
+    width: u32,
     height: u32,
 ) -> Result<Vec<u8>, FrameExtractionError> {
     if !tokio::fs::try_exists(&video_path).await.unwrap_or(false) {
@@ -177,7 +180,7 @@ pub async fn extract_frame(
         .args(["-ss", &timestamp_str])
         .arg("-i")
         .arg(video_path)
-        .args(["-vf", &format!("scale=-1:{}", height)])
+        .args(["-vf", &format!("scale={}:{}", width, height)])
         .args(["-frames:v", "1"])
         .args(["-f", "rawvideo"])
         .args(["-pix_fmt", "rgba"])

@@ -611,10 +611,11 @@ impl Editor {
 
         // Now that dimensions are set, extract initial frame
         let video_path = self.video_path.clone();
+        let width = self.preview_width as u32;
         let height = self.preview_height as u32;
         Task::perform(
             async move {
-                crate::video::extract_frame(video_path, 0.0, height)
+                crate::video::extract_frame(video_path, 0.0, width, height)
                     .await
                     .map_err(|e| e.to_string())
             },
@@ -679,11 +680,12 @@ impl Editor {
 
             let video_path = self.video_path.clone();
             let request_id = self.last_extraction_request_id;
+            let width = self.preview_width as u32;
             let height = self.preview_height as u32;
 
             Task::perform(
                 async move {
-                    crate::video::extract_frame(video_path, new_timestamp, height)
+                    crate::video::extract_frame(video_path, new_timestamp, width, height)
                         .await
                         .map_err(|e| e.to_string())
                 },
