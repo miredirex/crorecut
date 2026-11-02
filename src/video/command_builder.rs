@@ -3,6 +3,9 @@ use std::path::{Path, PathBuf};
 use super::Resolution;
 use crate::video::error::CompressionError;
 
+/// Some decoders declare a 96x96 minimum size, and certain video players reject anything smaller
+const MIN_OUTPUT_DIMENSION: i32 = 96;
+
 /// Video dimensions (original and preview)
 pub struct VideoDimensions {
     pub video_width: u32,
@@ -218,8 +221,8 @@ impl Pass2Builder {
     }
 }
 
-/// Build crop filter string from selection and dimensions
-fn build_crop_filter(crop: &CropSelection, dimen: &VideoDimensions) -> Option<String> {
+/// Crop rectangle `(w, h, x, y)` in source video pixels
+fn crop_rect(crop: &CropSelection, dimen: &VideoDimensions) -> Option<(i32, i32, i32, i32)> {
     let scale_x = if dimen.preview_width > 0.0 {
         dimen.video_width as f32 / dimen.preview_width
     } else {
@@ -237,16 +240,23 @@ fn build_crop_filter(crop: &CropSelection, dimen: &VideoDimensions) -> Option<St
     let x = (crop.x * scale_x).round() as i32;
     let y = (crop.y * scale_y).round() as i32;
 
-    if w > 0 && h > 0 {
-        Some(format!("crop={}:{}:{}:{}", w, h, x, y))
-    } else {
-        None
-    }
+    (w > 0 && h > 0).then_some((w, h, x, y))
 }
 
 /// -2 for width to ensure divisibility by 2
 fn build_scale_filter(resolution: Resolution) -> String {
     format!("scale=-2:{}", resolution.height())
+}
+
+/// Upscales the shorter side to [`MIN_OUTPUT_DIMENSION`] if it's below that
+fn build_min_size_filter(width: i32, height: i32) -> Option<String> {
+    if width.min(height) >= MIN_OUTPUT_DIMENSION {
+        None
+    } else if height < width {
+        Some(format!("scale=-2:{MIN_OUTPUT_DIMENSION}"))
+    } else {
+        Some(format!("scale={MIN_OUTPUT_DIMENSION}:-2"))
+    }
 }
 
 /// Combine crop and scale filters into a single filter: crop first, then scale
@@ -255,9 +265,15 @@ fn build_video_filter(
     resolution: Option<Resolution>,
     dimen: &VideoDimensions,
 ) -> Option<String> {
+    let crop = crop.and_then(|c| crop_rect(c, dimen));
+
+    let scale = resolution
+        .map(build_scale_filter)
+        .or_else(|| crop.and_then(|(w, h, _, _)| build_min_size_filter(w, h)));
+
     let filters: Vec<_> = [
-        crop.and_then(|c| build_crop_filter(c, dimen)),
-        resolution.map(build_scale_filter),
+        crop.map(|(w, h, x, y)| format!("crop={}:{}:{}:{}", w, h, x, y)),
+        scale,
     ]
     .into_iter()
     .flatten()
